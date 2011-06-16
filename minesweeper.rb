@@ -106,7 +106,7 @@ class MineBoard < Board
 end
 
 class KnownBoard < Board
-  UNKNOWN_MARKER = "U"
+  UNKNOWN_MARKER = "_"
   KNOWN_MARKER = "K"
   FLAG_MARKER = "F"
   
@@ -129,6 +129,8 @@ end
     
     
 class Minesweeper
+  STATUS_RUNNING = 0
+  STATUS_DONE = 1
   
   def initialize(width, height, mines)
     @width = width
@@ -139,6 +141,7 @@ class Minesweeper
   def setup()
     @mineBoard = MineBoard.new(@width, @height, @mines)
     @knownBoard = KnownBoard.new(@width, @height)
+    @moveNumber = 0
   end
   
   def draw()
@@ -149,7 +152,9 @@ class Minesweeper
     end
     
     @mineBoard.draw(canvas)
-    @knownBoard.draw(canvas)
+    if @status == STATUS_RUNNING
+      @knownBoard.draw(canvas)
+    end
     
     @height.times do |y|
       @width.times do |x|
@@ -160,6 +165,8 @@ class Minesweeper
   end
   
   def move()
+    @moveNumber += 1
+    print "move ##{@moveNumber}: x y = "
     x,y = gets.split()
     x,y = Integer(x), Integer(y)
     @knownBoard.move(x,y)
@@ -178,19 +185,19 @@ class Minesweeper
   end
   
   def run()
-    running = true
+    @status = STATUS_RUNNING
     setup()
-    while (running)
+    while (@status == STATUS_RUNNING)
       draw()
       begin
         move()
       rescue StandardError => err
         puts err
-        running = false
+        @status = STATUS_DONE
       end
       if checkWin()
-        running = false
-        puts "All mines cleared!"
+        @status = STATUS_DONE
+        puts "All mines found!"
       end
     end
     draw()
@@ -215,5 +222,5 @@ class RandomMinesweeper < Minesweeper
   end
 end
 
-minesweeper = RandomMinesweeper.new(3,3,1)
+minesweeper = RandomMinesweeper.new(3,3,2)
 minesweeper.run()
