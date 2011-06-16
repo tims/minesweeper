@@ -222,5 +222,7 @@ class RandomMinesweeper < Minesweeper
   end
 end
 
-minesweeper = RandomMinesweeper.new(3,3,2)
+print "Enter: width height numberOfMines = "
+width, height, mines = gets.split()
+minesweeper = RandomMinesweeper.new(Integer(width), Integer(height), Integer(mines))
 minesweeper.run()
